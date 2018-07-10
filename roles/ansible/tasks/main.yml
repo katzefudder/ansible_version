@@ -1,0 +1,55 @@
+---
+# install a specific version of ansible
+
+- name: Assert Ansible package from official repo is not installed
+  yum: pkg=ansible state=absent
+
+- name: Install virtualenv
+  yum: pkg=python-virtualenv state=installed
+
+- name: Remove directory for virtualenv if existing
+  file:
+    path: /user/local/share/ansible_env
+    state: absent
+
+- name: Create directory for virtualenv
+  file:
+    path: /user/local/share/ansible_env
+    state: directory
+
+- name: Manually create the initial virtualenv
+  command: virtualenv /user/local/share/ansible_env -p python2.7 creates="/user/local/share/ansible_env"
+
+- name: Copy pip requirements for ansible
+  template: src=requirements.txt.j2 dest=/tmp/ansible_requirements.txt
+
+- name: Install and upgrade setuptools
+  pip:
+    name: setuptools
+    extra_args: --upgrade
+    virtualenv: /user/local/share/ansible_env
+
+- name: Install ansible in a specific version
+  pip:
+    requirements: /tmp/ansible_requirements.txt
+    virtualenv: /user/local/share/ansible_env
+
+- name: Link ansible binaries from virtualenv
+  file:
+    src: '/user/local/share/ansible_env/bin/{{ item.binary }}'
+    dest: '/usr/bin/{{ item.binary }}'
+    owner: root
+    group: root
+    mode: a+x
+    state: link
+  with_items:
+    - { binary: 'ansible' }
+    - { binary: 'ansible-config' }
+    - { binary: 'ansible-connection' }
+    - { binary: 'ansible-console' }
+    - { binary: 'ansible-doc' }
+    - { binary: 'ansible-galaxy' }
+    - { binary: 'ansible-inventory' }
+    - { binary: 'ansible-playbook' }
+    - { binary: 'ansible-pull' }
+    - { binary: 'ansible-vault' }
