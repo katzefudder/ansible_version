@@ -1,8 +1,8 @@
 ---
 # install a specific version of ansible
 
-- name: Assert Ansible package from official repo is not installed
-  yum: pkg=ansible state=absent
+#- name: Assert Ansible package from official repo is not installed
+#  yum: pkg=ansible state=absent
 
 - name: Install virtualenv
   yum: pkg=python-virtualenv state=installed
