@@ -1,7 +1,7 @@
 ---
 
 - name: Install Ansible in a specific version
-  hosts: master
+  hosts: all
   roles:
     - ansible
   become: yes
